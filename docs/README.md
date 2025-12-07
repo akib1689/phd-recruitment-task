@@ -39,3 +39,7 @@ Main issues I faced:
 
 ## Task 2: Reviewing Boa Documentation and Examples
 
+After I got my access to the Boa platform, I started reviewing the exampls and documentation available at [https://boa.cs.iastate.edu/examples/index.php](https://boa.cs.iastate.edu/examples/index.php). and I tried to run those examples on my local machine. During this process, I discovered that there is a boa extension for VSCode that makes it easier to write and run boa scripts. I installed the extension and tried to run some of the examples provided in the documentation. I tried to run the most programming language example that is available in the documentation (first example available in the documentation). Using the vs code extension, I was able to run the example but when getting results using the extension, I faced problem the output was showing `undefined`. The output was okay but not showing in the extension output window. I had to check the output files generated in the platform to see the results.
+See screenshot below:
+![Boa VSCode Extension Output](../assets/screenshots/boa-vscode-extension-output.png)
+![Boa Platform Output File](../assets/screenshots/boa-platform-output-file.png)
