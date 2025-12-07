@@ -27,3 +27,49 @@ Please follow the guidelines below to complete the task.
 ### Deliverables
 
 A presentation slide deck summarizing: Methodology, Key findings and observations, Figures/tables/graphs where appropriate, conclusions & limitations.
+
+## Project Structure
+
+```sh
+├── analysis
+├── assets
+│   ├── data-samples
+│   ├── diagrams
+│   └── screenshots
+│       ├── login.png
+│       └── register.png
+├── docs
+├── presentation
+└── README.md
+```
+
+- `analysis/`: Contains scripts and notebooks used for data analysis.
+- `assets/`: Contains data samples, diagrams, and screenshots used in the presentation.
+- `docs/`: Contains additional documentation related to the project.
+- `presentation/`: Contains the slide deck summarizing the findings and conclusions.
+
+## Progress Tracking
+
+### Completed
+
+- [x] Boa account registration
+- [x] Initial documentation setup
+- [x] Repository structure creation
+- [x] Account approval (awaiting administrator approval)
+
+### In Progress
+
+- [ ] Boa example programs review
+- [ ] Query development planning
+
+### Planned
+
+- [ ] Boa query development for bug-fix commit detection
+- [ ] CFG extraction implementation
+- [ ] Dataset generation and analysis
+- [ ] Presentation creation with reveal.js
+
+## Journey Documentation
+
+For detailed step-by-step documentation of my progress, please see:  
+📖 [Journey Documentation](docs/README.md)
