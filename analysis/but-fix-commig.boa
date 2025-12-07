@@ -1,0 +1,51 @@
+# Keywords indicating bug/vulnerability fixes
+p: Project = input;
+
+keywords: array of string = {
+  "fix",
+  "bug",
+  "error",
+  "issue",
+  "fault",
+  "defect",
+  "patch",
+  "vulnerability",
+  "vulnerabilities",
+  "CVE",
+  "buffer",
+  "injection",
+  "overflow",
+  "npe",
+  "security",
+  "crash",
+  "resolve",
+  "correct",
+  "repair",
+  "lint"
+};
+
+messages: output collection of string;
+
+# iterate over code repositories in the project
+foreach (i: int; p.code_repositories[i]) {
+  project_url: string = p.project_url;
+  repo: CodeRepository = p.code_repositories[i];
+  # iterate over commits in the repository
+  foreach (j: int; repo.revisions[j]) {
+    commit: Revision = repo.revisions[j];
+    commit_url: string = project_url + "/commit/" + commit.id;
+    # get the commit message
+    msg: string = lowercase(commit.log);
+    # Remove the new line characters and other non standard spaces
+    msg = strreplace(msg, "\n", " ", true);
+    msg = strreplace(msg, "\r", " ", true);
+    # check if any keyword is present in the commit message
+    foreach (k: int; keywords[k]) {
+      if (strfind(keywords[k], msg) != -1) {
+        output_line: string = project_url + " , " + commit_url + " , " + msg;
+        messages << output_line;
+        break;
+      }
+    }
+  }
+}

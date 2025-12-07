@@ -56,10 +56,11 @@ A presentation slide deck summarizing: Methodology, Key findings and observation
 - [x] Initial documentation setup
 - [x] Repository structure creation
 - [x] Account approval (awaiting administrator approval)
+- [x] Boa example programs review
+- [x] Run a program to find all the commit messages containing keywords indicating bug-fix commits.
 
 ### In Progress
 
-- [ ] Boa example programs review
 - [ ] Query development planning
 
 ### Planned

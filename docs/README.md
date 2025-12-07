@@ -43,3 +43,9 @@ After I got my access to the Boa platform, I started reviewing the exampls and d
 See screenshot below:
 ![Boa VSCode Extension Output](../assets/screenshots/boa-vscode-extension-output.png)
 ![Boa Platform Output File](../assets/screenshots/boa-platform-output-file.png)
+
+## Task 3: Creating Dataset of Control Flows with Known Vulnerabilities
+
+### Subtask 3.1: Identifying Bug-Fix Commits
+
+Written a Boa script to identify commits that indicate bug fixes using keywords such as "bug", "fix", "patch", "issue", "error", "vulnerability", "security", "CVE", "buffer", "injection", "npe", and "overflow". The script iterates over all commits in the Boa dataset and checks if the commit message contains any of the specified keywords. If a match is found, it outputs the project URL, commit URL, and commit message.
