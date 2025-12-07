@@ -49,3 +49,7 @@ See screenshot below:
 ### Subtask 3.1: Identifying Bug-Fix Commits
 
 Written a Boa script to identify commits that indicate bug fixes using keywords such as "bug", "fix", "patch", "issue", "error", "vulnerability", "security", "CVE", "buffer", "injection", "npe", and "overflow". The script iterates over all commits in the Boa dataset and checks if the commit message contains any of the specified keywords. If a match is found, it outputs the project URL, commit URL, and commit message.
+
+### Subtask 3.2: Extracting Control Flow Graphs (CFGs) from Bug-Fix Commits
+
+Developed a Boa script to extract Control Flow Graphs (CFGs) from the source code associated with the identified bug-fix commits.
