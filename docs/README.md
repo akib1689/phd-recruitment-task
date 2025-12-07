@@ -52,4 +52,50 @@ Written a Boa script to identify commits that indicate bug fixes using keywords 
 
 ### Subtask 3.2: Extracting Control Flow Graphs (CFGs) from Bug-Fix Commits
 
-Developed a Boa script to extract Control Flow Graphs (CFGs) from the source code associated with the identified bug-fix commits.
+Developed a Boa script to extract Control Flow Graphs (CFGs) from the source code associated with the identified bug-fix commits. The portion of the script responsible for CFG extraction is shown below:
+
+```sh
+if (is_fix_commit) {
+      # 5. If it's a fixing commit, iterate over the changed files to analyze methods
+      
+      # Use a visitor pattern to traverse the contents of the commit
+      visit(commit, visitor {
+          # Target nodes of type ChangedFile [5, 9]
+          before file: ChangedFile -> {
+              # Get the Abstract Syntax Tree (AST) for the file [10]
+              ast: ASTRoot = getast(file);
+              
+              # Traverse the AST to find Method declarations
+              visit(ast, visitor {
+                  # Target nodes of type Method [9, 11]
+                  before m: Method -> {
+                      # 6. Generate the Control Flow Graph (CFG) for the method [3]
+                      cfg: CFG = getcfg(m);
+                      
+                      # 7. Serialize the CFG into Graphviz DOT string format [2]
+                      # This string represents the nodes and edges (as required for the dataset)
+                      cfg_dot: string = dot(cfg, true);
+
+                      cfg_dot = strreplace(cfg_dot, "\n", " ", true); # Clean new lines for output [8]
+                      cfg_dot = strreplace(cfg_dot, "\r", " ", true); # Clean carriage returns for output [8]
+                      
+                      # 8. Output the required data, comma separated
+                      output_line: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + cfg_dot;
+                      fix_cfgs << output_line;
+                  }
+              });
+              
+              # Stop traversing the Revision object's children once the file's contents are handled, 
+              # allowing the visitor to move to the next ChangedFile in the list.
+              stop; # [12]
+          }
+      });
+  }
+}
+```
+
+This script processes each bug-fix commit, traverses the changed files, and generates the CFG for each method in the files. The CFG is serialized into Graphviz DOT format for easy representation of nodes and edges.
+
+### Subtask 3.3: Extracting The CFG of the Previous Version of the Fixed Method
+
+In this step, I enhanced the previous Boa script to also extract the CFG of the method from the commit prior to the bug-fix commit. This allows for a comparative analysis between the buggy version and the fixed version of the method. The script retrieves the parent commit of the bug-fix commit, accesses the changed files in that commit, and generates the CFG for the corresponding method. The file for this checkpoint is located at `analysis/fix-commit-with-previous-cfg.boa`.

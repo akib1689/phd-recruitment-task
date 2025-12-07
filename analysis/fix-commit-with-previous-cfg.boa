@@ -1,0 +1,155 @@
+# 1. Define input/output
+p: Project = input;
+
+# Output: project_url, commit_url, commit_msg, file_path, method_name, version(PRE/POST), cfg_dot
+paired_cfgs: output collection of string;
+
+# Keywords for fix commits
+keywords: array of string = {
+  "fix", "bug", "error", "issue", "fault", "defect", "patch",
+  "vulnerability", "vulnerabilities", "CVE", "buffer",
+  "injection", "overflow", "npe", "security", "crash",
+  "resolve", "correct", "repair", "lint"
+};
+
+getchangedfile := function(commit: Revision, file_path: string): ChangedFile {
+    result: ChangedFile;
+    
+    foreach (i: int; commit.files[i]) {
+        file: ChangedFile = commit.files[i];
+        if (file.name == file_path) {
+            result = file;
+            # Since you used an explicit 'return file;' in your original, we assume this is fine.
+            return file; 
+        }
+    }
+    
+    # If the loop finishes without finding a file, 'result' remains undefined.
+    # We rely on the implicit behavior of the function returning an undefined value here.
+    # If the compiler complains about a missing return, you can return the undefined 'result'.
+    return result; 
+};
+
+
+# 2. Iterate repos
+foreach (i: int; p.code_repositories[i]) {
+  repo: CodeRepository = p.code_repositories[i];
+  project_url: string = p.project_url;
+
+  # 3. Iterate commits
+  foreach (j: int; repo.revisions[j]) {
+    commit: Revision = repo.revisions[j];
+    
+    # Skip first commit (no parent)
+    if (j == 0) continue;
+
+    commit_url: string = project_url + "/commit/" + commit.id;
+    msg_raw: string = commit.log;
+    msg_clean: string = lowercase(strreplace(strreplace(msg_raw, "\n", " ", true), "\r", " ", true));
+
+    # Check for fix keywords
+    is_fix_commit: bool = false;
+    foreach (k: int; keywords[k]) {
+      if (strfind(keywords[k], msg_clean) != -1) {
+        is_fix_commit = true;
+        break;
+      }
+    }
+
+    if (!is_fix_commit) continue;
+
+    # Get parent commit
+    parent_commit: Revision = repo.revisions[j - 1];
+
+    # 4. Visit changed files in CURRENT commit
+    visit(commit, visitor {
+        before file: ChangedFile -> {
+            file_path: string = file.name;
+
+            if (!iskind("SOURCE", file.kind)) {
+                stop;
+            };
+
+            # Get the same file in parent commit
+            parent_file: ChangedFile = getchangedfile(parent_commit, file_path);
+
+            # parse ASTs
+            ast_curr: ASTRoot = getast(file);
+            if (!def(parent_file)) {
+                visit(ast_curr, visitor {
+                    before method: Method -> {
+                        # Check if method has a valid name, otherwise use a placeholder
+                        method_name: string = "unnamed_method";
+                        if (def(method.name) && len(method.name) > 0) {
+                            method_name = method.name;
+                        }
+                        
+                        # Get CFG with null check
+                        cfg: CFG = getcfg(method);
+                        if (!def(cfg)) {
+                            # Skip methods that can't generate CFG
+                            stop;
+                        }
+                        
+                        cfg_dot: string = dot(cfg, true);
+                        if (!def(cfg_dot)) {
+                            stop;
+                        }
+                        
+                        # Clean the DOT string
+                        cfg_dot = strreplace(cfg_dot, "\n", " ", true);
+                        cfg_dot = strreplace(cfg_dot, "\r", " ", true);
+                        
+                        # Safe output with method name fallback
+                        output_line: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + method_name + " , " + cfg_dot + " , POST";
+                        paired_cfgs << output_line;
+                    }
+                });
+            } else {
+                ast_prev: ASTRoot = getast(parent_file);
+
+                visit(ast_curr, visitor {
+                    before method_curr: Method -> {
+                        # prev method
+                        method_prev : Method;
+
+                        visit(ast_prev, visitor {
+                            before candidate: Method -> {
+                                if (candidate.name == method_curr.name) {
+                                    method_prev = candidate;
+                                }
+                            }
+                        });
+                        # if found prev method, get CFGs
+                        if (def(method_prev)) {
+                            # PRE CFG
+                            cfg_prev: CFG = getcfg(method_prev);
+                            cfg_dot_prev: string = dot(cfg_prev, true);
+                            cfg_dot_prev = strreplace(cfg_dot_prev, "\n", " ", true);
+                            cfg_dot_prev = strreplace(cfg_dot_prev, "\r", " ", true);
+                            output_line_prev: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + method_prev.name + " , " + cfg_dot_prev + " , PRE";
+                            paired_cfgs << output_line_prev;
+                            # POST CFG
+                            cfg_curr: CFG = getcfg(method_curr);
+                            cfg_dot_curr: string = dot(cfg_curr, true);
+                            cfg_dot_curr = strreplace(cfg_dot_curr, "\n", " ", true);
+                            cfg_dot_curr = strreplace(cfg_dot_curr, "\r", " ", true);
+                            output_line_curr: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + method_curr.name + " , " + cfg_dot_curr + " , POST";
+                            paired_cfgs << output_line_curr;
+                        } else {
+                            # only POST CFG
+                            cfg_curr: CFG = getcfg(method_curr);
+                            cfg_dot_curr: string = dot(cfg_curr, true);
+                            cfg_dot_curr = strreplace(cfg_dot_curr, "\n", " ", true);
+                            cfg_dot_curr = strreplace(cfg_dot_curr, "\r", " ", true);
+                            output_line_curr: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + method_curr.name + " , " + cfg_dot_curr + " , POST";
+                            paired_cfgs << output_line_curr;
+                        }
+
+                    }
+                });
+            }
+        }
+    });
+  }
+}

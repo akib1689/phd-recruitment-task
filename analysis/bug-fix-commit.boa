@@ -61,13 +61,13 @@ foreach (i: int; p.code_repositories[i]) {
                         
                         # 7. Serialize the CFG into Graphviz DOT string format [2]
                         # This string represents the nodes and edges (as required for the dataset)
-                        cfg_dot: string = dot(cfg);
+                        cfg_dot: string = dot(cfg, true);
 
                         cfg_dot = strreplace(cfg_dot, "\n", " ", true); # Clean new lines for output [8]
                         cfg_dot = strreplace(cfg_dot, "\r", " ", true); # Clean carriage returns for output [8]
                         
                         # 8. Output the required data, comma separated
-                        output_line: string = project_url + " , " + commit_url + " , " + msg_raw + " , " + cfg_dot;
+                        output_line: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + cfg_dot;
                         fix_cfgs << output_line;
                     }
                 });

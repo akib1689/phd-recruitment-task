@@ -18,10 +18,15 @@ Please follow the guidelines below to complete the task.
     1. From the selected projects, what are the top 10 that have the most commits on fixing bugs, issues, and vulnerabilities?
 
         1. What are their common characteristics? For example, are they all related to machine learning, to mobile development, etc?
+
         1. Is there anything that all the top projects don't have in common?
+
         1. Do any of those projects have incivil commits? By incivil comments, we mean commit messages containing offensive, rude, or hostile language (e.g., as detected by a toxicity classifier or manual review).
+
         1. Regarding the CFGs of those projects, is the depth of the CFG correlated in any way to the existence of bugs, vulnerabilities, and issues?
+
     1. Analyze the commits from all projects and identify the most common types of issues, vulnerabilities, and bugs.
+
 1. Create a presentation to showcase findings and conclusions.
 
 ### Deliverables
@@ -58,15 +63,15 @@ A presentation slide deck summarizing: Methodology, Key findings and observation
 - [x] Account approval (awaiting administrator approval)
 - [x] Boa example programs review
 - [x] Run a program to find all the commit messages containing keywords indicating bug-fix commits.
+- [x] Query development planning
+- [x] Boa query development for bug-fix commit detection
+- [x] CFG extraction implementation
 
 ### In Progress
 
-- [ ] Query development planning
 
 ### Planned
 
-- [ ] Boa query development for bug-fix commit detection
-- [ ] CFG extraction implementation
 - [ ] Dataset generation and analysis
 - [ ] Presentation creation with reveal.js
 
