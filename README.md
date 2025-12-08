@@ -66,13 +66,16 @@ A presentation slide deck summarizing: Methodology, Key findings and observation
 - [x] Query development planning
 - [x] Boa query development for bug-fix commit detection
 - [x] CFG extraction implementation
+- [x] Dataset generation
 
 ### In Progress
 
+- [ ] Data cleaning and preprocessing
+- [ ] Data analysis and visualization
+- [ ] Answering research questions based on the dataset
 
 ### Planned
 
-- [ ] Dataset generation and analysis
 - [ ] Presentation creation with reveal.js
 
 ## Journey Documentation
