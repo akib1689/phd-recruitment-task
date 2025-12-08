@@ -99,3 +99,127 @@ This script processes each bug-fix commit, traverses the changed files, and gene
 ### Subtask 3.3: Extracting The CFG of the Previous Version of the Fixed Method
 
 In this step, I enhanced the previous Boa script to also extract the CFG of the method from the commit prior to the bug-fix commit. This allows for a comparative analysis between the buggy version and the fixed version of the method. The script retrieves the parent commit of the bug-fix commit, accesses the changed files in that commit, and generates the CFG for the corresponding method. The file for this checkpoint is located at `analysis/fix-commit-with-previous-cfg.boa`.
+
+### Subtask 3.4: Dataset Compilation
+
+After the data is processed, I needed to download the output files. The output file that generated on the dataset `2019 October/GitHub (small)` is around 1 GB in size. To download the output file, I tried using the Boa platform's web interface, but it was hard due to large data size. So I used the Boa's python api to download the output file programmatically. Below is a sample code snippet that demonstrates how to download the output file using the Boa Python API:
+
+```python
+import getpass
+import time
+
+from boaapi.boa_client import BOA_API_ENDPOINT, BoaClient
+from boaapi.status import CompilerStatus, ExecutionStatus
+
+client = BoaClient(endpoint=BOA_API_ENDPOINT)
+user = input("Username [%s]: " % getpass.getuser())
+if not user:
+    user = getpass.getuser()
+client.login(user, getpass.getpass())
+print('successfully logged in to Boa API')
+
+# get the last job
+job = client.last_job();
+
+if job.is_running() is False and job.exec_status == ExecutionStatus.FINISHED:
+    print('Job is not running and finished successfully. Downloading output...')
+    output = job.output()
+    with open('output.txt', 'w') as f:
+        f.write(output)
+    print('Output written to output.txt')
+else:
+    print('Job is still running. Please wait until it finishes.')
+```
+
+This script was getting this following error: 
+
+```sh
+ python analysis/output-downloader.py
+Username [akib]: 
+Password: 
+successfully logged in to Boa API
+Job is not running and finished successfully. Downloading output...
+Traceback (most recent call last):
+  File "/Users/akib/Developer/phd-recruitment-task/analysis/output-downloader.py", line 19, in <module>
+    output = job.output()
+  File "/Users/akib/.pyenv/versions/boa-client/lib/python3.13/site-packages/boaapi/job_handle.py", line 91, in output
+    return self.client._output(self)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/akib/.pyenv/versions/boa-client/lib/python3.13/site-packages/boaapi/boa_client.py", line 403, in _output
+    return fetch_url(self.server.job.output(job.id)).decode('utf-8')
+                     ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/Users/akib/.pyenv/versions/3.13.1/lib/python3.13/xmlrpc/client.py", line 1096, in __call__
+    return self.__send(self.__name, args)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/akib/.pyenv/versions/3.13.1/lib/python3.13/xmlrpc/client.py", line 1435, in __request
+    response = self.__transport.request(
+        self.__host,
+    ...<2 lines>...
+        verbose=self.__verbose
+        )
+  File "/Users/akib/.pyenv/versions/3.13.1/lib/python3.13/xmlrpc/client.py", line 1140, in request
+    return self.single_request(host, handler, request_body, verbose)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/akib/.pyenv/versions/3.13.1/lib/python3.13/xmlrpc/client.py", line 1170, in single_request
+    raise ProtocolError(
+    ...<3 lines>...
+        )
+xmlrpc.client.ProtocolError: <ProtocolError for boa.cs.iastate.edu/boa/?q=boa/api: 500 Service unavailable (with message)>
+```
+
+I then modified the script to download the output file using the `requests` library instead of the built-in XML-RPC client. Below is the updated code snippet:
+
+```python
+import getpass
+
+import requests
+from boaapi.boa_client import BOA_API_ENDPOINT, BoaClient
+from boaapi.status import CompilerStatus, ExecutionStatus
+from tqdm import tqdm
+
+client = BoaClient(endpoint=BOA_API_ENDPOINT)
+user = input("Username [%s]: " % getpass.getuser())
+if not user:
+    user = getpass.getuser()
+client.login(user, getpass.getpass())
+print('successfully logged in to Boa API')
+
+# get the last job
+job = client.last_job();
+
+print('Last job details:')
+print(job)
+
+if job.is_running() is False and job.exec_status == ExecutionStatus.FINISHED:
+    print('Job is not running and finished successfully. Downloading output...')
+    outputSize, outputHash = job.output_hash()
+    print(f'Output size: {outputSize} bytes')
+    print(f'Output hash: {outputHash}')
+    # url: https://boa.cs.iastate.edu/boa/output/113733/907c264899ba49a8f489ef785d629336/boa-job113733-output.txt
+    job_url = job.get_url() + '/download'
+    # make the job public if not already (this is a hack to avoid authentication issues)
+    job.set_public(True)
+    print(f'Downloading from {job_url} ...')
+    response = requests.get(job_url, stream=True)
+    response.raise_for_status()
+    total = int(response.headers.get('content-length', 0))
+    chunk_size = 8192
+    with open(f'job-{job.id}-output.txt', 'wb') as f, tqdm(
+        desc=f'Downloading job-{job.id}-output.txt',
+        total=total,
+        unit='B',
+        unit_scale=True,
+        unit_divisor=1024,
+    ) as bar:
+        for chunk in response.iter_content(chunk_size=chunk_size):
+            if chunk:
+                f.write(chunk)
+                bar.update(len(chunk))
+    print(f'Output downloaded to job-{job.id}-output.txt')
+    # make the job private again
+    job.set_public(False)
+else:
+    print('Job is still running. Please wait until it finishes.') 
+```
+
+This updated script successfully downloads the output file from the Boa platform, handling large files efficiently with progress tracking using the `tqdm` library. If you look closely, you will see that I had to make the job public temporarily to avoid authorization issues when downloading the output file. The main reason for this when I am requesting the output file using the `requests` library, it does not have the authentication cookies that were set during the login process using the Boa Python API. By making the job public temporarily, I can bypass the authentication requirement and download the output file without any issues.
