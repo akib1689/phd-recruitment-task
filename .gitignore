@@ -1,3 +1,4 @@
 .DS_Store
 digest.txt
 .python-version
+assets/data-samples/*
