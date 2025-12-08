@@ -171,6 +171,7 @@ I then modified the script to download the output file using the `requests` libr
 
 ```python
 import getpass
+import os
 
 import requests
 from boaapi.boa_client import BOA_API_ENDPOINT, BoaClient
@@ -193,9 +194,13 @@ print(job)
 if job.is_running() is False and job.exec_status == ExecutionStatus.FINISHED:
     print('Job is not running and finished successfully. Downloading output...')
     outputSize, outputHash = job.output_hash()
+    output_file = f'assets/data-samples/job-{job.id}-output.txt'
+    if os.path.exists(output_file):
+        print(f'Output file {output_file} already exists. Skipping download.')
+        exit(0)
+    
     print(f'Output size: {outputSize} bytes')
     print(f'Output hash: {outputHash}')
-    # url: https://boa.cs.iastate.edu/boa/output/113733/907c264899ba49a8f489ef785d629336/boa-job113733-output.txt
     job_url = job.get_url() + '/download'
     # make the job public if not already (this is a hack to avoid authentication issues)
     job.set_public(True)
@@ -204,8 +209,8 @@ if job.is_running() is False and job.exec_status == ExecutionStatus.FINISHED:
     response.raise_for_status()
     total = int(response.headers.get('content-length', 0))
     chunk_size = 8192
-    with open(f'job-{job.id}-output.txt', 'wb') as f, tqdm(
-        desc=f'Downloading job-{job.id}-output.txt',
+    with open(output_file, 'wb') as f, tqdm(
+        desc=f'Downloading {output_file}',
         total=total,
         unit='B',
         unit_scale=True,
@@ -219,7 +224,145 @@ if job.is_running() is False and job.exec_status == ExecutionStatus.FINISHED:
     # make the job private again
     job.set_public(False)
 else:
-    print('Job is still running. Please wait until it finishes.') 
+    print('Job is still running. Please wait until it finishes.')
 ```
 
 This updated script successfully downloads the output file from the Boa platform, handling large files efficiently with progress tracking using the `tqdm` library. If you look closely, you will see that I had to make the job public temporarily to avoid authorization issues when downloading the output file. The main reason for this when I am requesting the output file using the `requests` library, it does not have the authentication cookies that were set during the login process using the Boa Python API. By making the job public temporarily, I can bypass the authentication requirement and download the output file without any issues.
+
+### Subtask 3.5: Converting Output to CSV Format (Dataset Compilation)
+
+After successfully downloading the output file from the Boa platform, I proceeded to convert the data into a structured CSV format for easier analysis and usability. The output file contained lines of data separated by a custom delimiter "[|]", which needed to be parsed and organized into columns in a CSV file. To achieve this, I wrote a Python script that reads the downloaded output file, splits each line by the custom delimiter, and writes the resulting fields into a CSV file using Python's built-in `csv` module. Please find the code snippet below:
+
+```python
+
+import csv
+import os
+import re
+
+# take jobid as input
+jobid = input("Enter the job ID: ").strip()
+input_path = f'assets/data-samples/job-{jobid}-output.txt'
+output_path = f'assets/data-samples/job-{jobid}.csv'
+
+# Check if input file exists
+if not os.path.exists(input_path):
+    print(f"Input file {input_path} does not exist.")
+    exit(1)
+
+rows = []
+with open(input_path, 'r') as infile:
+    for line in infile:
+        line = line.strip()
+        if not line:
+            continue
+        # Remove the prefix
+        if line.startswith('paired_cfgs[] = '):
+            line = line[len('paired_cfgs[] = '):]
+        # Split into all fields. The source text joins fields with '[|]'.
+        parts = [p.strip() for p in line.split('[|]')]
+
+        # Expected fields (based on how rows are printed elsewhere):
+        # 0 project_name
+        # 1 project_description
+        # 2 project_url
+        # 3 project_creation_date
+        # 4 project_database
+        # 5 project_interfaces
+        # 6 project_oss
+        # 7 project_languages
+        # 8 project_topics
+        # 9 (possibly empty)
+        # 10 commit_url
+        # 11 files_changed_count
+        # 12 commit_message (msg_clean)
+        # 13 file_path
+        # 14 method_name
+        # 15 cfg_dot_curr (may have appended ' , POST' or ' , PRE')
+
+        # Pad parts with empty strings up to 16 fields to avoid index errors
+        if len(parts) < 16:
+            parts += [''] * (16 - len(parts))
+
+        project_name = parts[0]
+        project_description = parts[1]
+        project_url = parts[2]
+        project_creation_date = parts[3]
+        project_database = parts[4]
+        project_interfaces = parts[5]
+        project_oss = parts[6]
+        project_languages = parts[7]
+        project_topics = parts[8]
+        # If the input contains an extra empty field at index 9, we accept that.
+        commit_url = parts[10]
+        files_changed_count = parts[11]
+        commit_message = parts[12]
+        file_path = parts[13]
+        method_name = parts[14]
+
+        # The CFG field may have an appended ' , POST' or ' , PRE'. We'll extract that.
+        cfg_field = parts[15]
+        cfg_state = ''
+        if cfg_field:
+            # Look for a trailing comma followed by PRE or POST, case-insensitive
+            m = re.search(r"\s*,\s*(PRE|POST)\s*$", cfg_field, re.IGNORECASE)
+            if m:
+                cfg_state = m.group(1).upper()
+                cfg = re.sub(r"\s*,\s*(PRE|POST)\s*$", '', cfg_field, flags=re.IGNORECASE).strip()
+            else:
+                # If not found, check if there is a trailing word PRE/POST without comma
+                m2 = re.search(r"\s+(PRE|POST)\s*$", cfg_field, re.IGNORECASE)
+                if m2:
+                    cfg_state = m2.group(1).upper()
+                    cfg = re.sub(r"\s+(PRE|POST)\s*$", '', cfg_field, flags=re.IGNORECASE).strip()
+                else:
+                    cfg = cfg_field
+        else:
+            cfg = ''
+
+        rows.append([
+            project_name,
+            project_description,
+            project_url,
+            project_creation_date,
+            project_database,
+            project_interfaces,
+            project_oss,
+            project_languages,
+            project_topics,
+            commit_url,
+            files_changed_count,
+            commit_message,
+            file_path,
+            method_name,
+            cfg,
+            cfg_state,
+        ])
+
+# Write with '|' as separator
+with open(output_path, 'w', newline='', encoding='utf-8') as csvfile:
+    writer = csv.writer(csvfile)
+    headers = [
+        'project_name',
+        'project_description',
+        'project_url',
+        'project_creation_date',
+        'project_database',
+        'project_interfaces',
+        'project_oss',
+        'project_languages',
+        'project_topics',
+        'commit_url',
+        'files_changed_count',
+        'commit_message',
+        'file_path',
+        'method_name',
+        'cfg_dot',
+        'CFG State',
+    ]
+    writer.writerow(headers)
+    for row in rows:
+        writer.writerow(row)
+print(f"Comma-separated file created at {output_path}")
+```
+
+This script reads the output file line by line, splits each line into its constituent fields using the custom delimiter "[|]", and processes the CFG field to separate the actual CFG data from the appended state indicator (PRE or POST). The processed data is then written into a CSV file with appropriate headers, using the pipe character '|' as the delimiter for better readability. The final CSV file is saved in the same directory as the input file, making it easy to locate and use for further analysis.

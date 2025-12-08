@@ -34,11 +34,35 @@ getchangedfile := function(commit: Revision, file_path: string): ChangedFile {
 # 2. Iterate repos
 foreach (i: int; p.code_repositories[i]) {
   repo: CodeRepository = p.code_repositories[i];
+  project_name: string = p.name;
+  project_description: string = p.description;
   project_url: string = p.project_url;
-
+  project_creation_date: time = p.created_date;
+  project_database: string = "";
+  foreach (j: int; p.databases[j]) {
+    project_database += p.databases[j] + "; "; 
+  }
+  project_interfaces: string = "";
+  foreach (j: int; p.interfaces[j]) {
+    project_interfaces += p.interfaces[j] + "; ";
+  }
+  project_oss: string = "";
+  foreach (j: int; p.operating_systems[j]) {
+    project_oss += p.operating_systems[j] + "; ";
+  }
+  project_languages: string = "";
+  foreach (j: int; p.programming_languages[j]) {
+    project_languages += p.programming_languages[j] + "; ";
+  }
+  project_topics: string = "";
+  foreach (j: int; p.topics[j]) {
+    project_topics += p.topics[j] + "; ";
+  }
   # 3. Iterate commits
   foreach (j: int; repo.revisions[j]) {
     commit: Revision = repo.revisions[j];
+    files_changed_count: int = len(commit.files);
+
     
     # Skip first commit (no parent)
     if (j == 0) continue;
@@ -101,7 +125,7 @@ foreach (i: int; p.code_repositories[i]) {
                         cfg_dot = strreplace(cfg_dot, "\r", " ", true);
                         
                         # Safe output with method name fallback
-                        output_line: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + method_name + " , " + cfg_dot + " , POST";
+                        output_line: string = project_name + "[|]" + project_description + "[|]" + project_url + "[|]" + string(project_creation_date) + "[|]" + project_database + "[|]" + project_interfaces + "[|]" + project_oss + "[|]" + project_languages + "[|]" + project_topics + "[|]" + commit_url + "[|]" + string(files_changed_count) + "[|]" + msg_clean + "[|]" + file_path + "[|]" + method_name + "[|]" + cfg_dot + "[|] POST";
                         paired_cfgs << output_line;
                     }
                 });
@@ -127,14 +151,14 @@ foreach (i: int; p.code_repositories[i]) {
                             cfg_dot_prev: string = dot(cfg_prev, true);
                             cfg_dot_prev = strreplace(cfg_dot_prev, "\n", " ", true);
                             cfg_dot_prev = strreplace(cfg_dot_prev, "\r", " ", true);
-                            output_line_prev: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + method_prev.name + " , " + cfg_dot_prev + " , PRE";
+                            output_line_prev: string = project_name + "[|]" + project_description + "[|]" + project_url + "[|]" + string(project_creation_date) + "[|]" + project_database + "[|]" + project_interfaces + "[|]" + project_oss + "[|]" + project_languages + "[|]" + project_topics + "[|]" + commit_url + "[|]" + string(files_changed_count) + "[|]" + msg_clean + "[|]" + file_path + "[|]" + method_prev.name + "[|]" + cfg_dot_prev + "[|] PRE";
                             paired_cfgs << output_line_prev;
                             # POST CFG
                             cfg_curr: CFG = getcfg(method_curr);
                             cfg_dot_curr: string = dot(cfg_curr, true);
                             cfg_dot_curr = strreplace(cfg_dot_curr, "\n", " ", true);
                             cfg_dot_curr = strreplace(cfg_dot_curr, "\r", " ", true);
-                            output_line_curr: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + method_curr.name + " , " + cfg_dot_curr + " , POST";
+                            output_line_curr: string = project_name + "[|]" + project_description + "[|]" + project_url + "[|]" + string(project_creation_date) + "[|]" + project_database + "[|]" + project_interfaces + "[|]" + project_oss + "[|]" + project_languages + "[|]" + project_topics + "[|]" + commit_url + "[|]" + string(files_changed_count) + "[|]" + msg_clean + "[|]" + file_path + "[|]" + method_curr.name + "[|]" + cfg_dot_curr + "[|] POST";
                             paired_cfgs << output_line_curr;
                         } else {
                             # only POST CFG
@@ -142,8 +166,8 @@ foreach (i: int; p.code_repositories[i]) {
                             cfg_dot_curr: string = dot(cfg_curr, true);
                             cfg_dot_curr = strreplace(cfg_dot_curr, "\n", " ", true);
                             cfg_dot_curr = strreplace(cfg_dot_curr, "\r", " ", true);
-                            output_line_curr: string = project_url + " , " + commit_url + " , " + msg_clean + " , " + method_curr.name + " , " + cfg_dot_curr + " , POST";
-                            paired_cfgs << output_line_curr;
+                            output_line: string = project_name + "[|]" + project_description + "[|]" + project_url + "[|]" + string(project_creation_date) + "[|]" + project_database + "[|]" + project_interfaces + "[|]" + project_oss + "[|]" + project_languages + "[|]" + project_topics + "[|]" + commit_url + "[|]" + string(files_changed_count) + "[|]" + msg_clean + "[|]" + file_path + "[|]" + method_curr.name + "[|]" + cfg_dot_curr + "[|] POST";
+                            paired_cfgs << output_line;
                         }
 
                     }

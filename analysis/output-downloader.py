@@ -37,8 +37,8 @@ if job.is_running() is False and job.exec_status == ExecutionStatus.FINISHED:
     response.raise_for_status()
     total = int(response.headers.get('content-length', 0))
     chunk_size = 8192
-    with open(f'job-{job.id}-output.txt', 'wb') as f, tqdm(
-        desc=f'Downloading job-{job.id}-output.txt',
+    with open(output_file, 'wb') as f, tqdm(
+        desc=f'Downloading {output_file}',
         total=total,
         unit='B',
         unit_scale=True,
