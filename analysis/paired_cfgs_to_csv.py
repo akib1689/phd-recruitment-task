@@ -56,32 +56,15 @@ with open(input_path, 'r') as infile:
         project_oss = parts[6]
         project_languages = parts[7]
         project_topics = parts[8]
-        # If the input contains an extra empty field at index 9, we accept that.
-        commit_url = parts[10]
-        files_changed_count = parts[11]
-        commit_message = parts[12]
-        file_path = parts[13]
-        method_name = parts[14]
+        commit_url = parts[9]
+        files_changed_count = parts[10]
+        commit_message = parts[11]
+        file_path = parts[12]
+        method_name = parts[13]
 
         # The CFG field may have an appended ' , POST' or ' , PRE'. We'll extract that.
-        cfg_field = parts[15]
-        cfg_state = ''
-        if cfg_field:
-            # Look for a trailing comma followed by PRE or POST, case-insensitive
-            m = re.search(r"\s*,\s*(PRE|POST)\s*$", cfg_field, re.IGNORECASE)
-            if m:
-                cfg_state = m.group(1).upper()
-                cfg = re.sub(r"\s*,\s*(PRE|POST)\s*$", '', cfg_field, flags=re.IGNORECASE).strip()
-            else:
-                # If not found, check if there is a trailing word PRE/POST without comma
-                m2 = re.search(r"\s+(PRE|POST)\s*$", cfg_field, re.IGNORECASE)
-                if m2:
-                    cfg_state = m2.group(1).upper()
-                    cfg = re.sub(r"\s+(PRE|POST)\s*$", '', cfg_field, flags=re.IGNORECASE).strip()
-                else:
-                    cfg = cfg_field
-        else:
-            cfg = ''
+        cfg = parts[14]
+        cfg_state = parts[15]
 
         rows.append([
             project_name,
@@ -121,7 +104,7 @@ with open(output_path, 'w', newline='', encoding='utf-8') as csvfile:
         'file_path',
         'method_name',
         'cfg_dot',
-        'CFG State',
+        'cfg_state',
     ]
     writer.writerow(headers)
     for row in rows:
