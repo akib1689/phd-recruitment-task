@@ -2,3 +2,7 @@
 digest.txt
 .python-version
 assets/data-samples/*
+__pycache__/
+.ipynb_checkpoints
+.vscode/
+env/
