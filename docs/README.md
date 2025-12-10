@@ -386,3 +386,9 @@ The notebook includes the following key sections:
 I have implemented a semantic clustering pipeline to identify common issue types, bugs, and vulnerabilities in the dataset. This analysis uses **Sentence Transformers**, **UMAP**, and **HDBSCAN** to group similar commits based on their messages and changed files.
 
 For detailed documentation, methodology, and findings, please refer to: [**Issue Clustering Analysis Docs**](issue_clustering_analysis.md).
+
+## Task 6: Analysis of Top 10 Fix Projects
+
+I have analyzed the top 10 projects with the most bug-fixing commits to identify their commonalities and differences. Key findings include a dominance of Java and a significant disparity in commit volume.
+
+For the detailed analysis, see: [**Top 10 Fix Projects Analysis**](top_10_fix_projects_analysis.md).
