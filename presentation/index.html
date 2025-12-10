@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Presentation</title>
   <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css">
-  <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/white-contrast.css">
+  <link rel="icon" type="image/svg+xml" href="https://revealjs.com/images/favicon.svg">
+  <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/serif.css">
 </head>
 <body>
   <div class="reveal">
@@ -15,18 +16,20 @@
             data-separator="^\n\n\n"
             data-separator-vertical="^\n\n"
             data-separator-notes="^Note:"
-            data-charset="utf-8"
+            data-charset="iso-8859-15"
         >
         </section>
     </div>
   </div>
 
   <script src="node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+  <script src="node_modules/reveal.js/plugin/notes/notes.js"></script>
 
   <script src="node_modules/reveal.js/dist/reveal.js"></script>
   <script>
     Reveal.initialize({
-      plugins: [RevealMarkdown]
+      hash: true,
+      plugins: [RevealMarkdown, RevealNotes]
     });
   </script>
 </body>

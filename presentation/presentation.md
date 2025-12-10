@@ -1,51 +1,64 @@
-# Mining Software Repositories for Bug-Fix Patterns
-
+### Mining Software Repositories for Bug-Fix Patterns
 **Analysis of Bug-Fix Commits and Vulnerability Patterns**
 
+Note:
+Hello all, today we'll explore patterns in software bugs and vulnerabilities across thousands of commits
 
-## Overview
 
-This study analyzes bug-fix commits across GitHub repositories using:
-- **Boa Infrastructure** for large-scale repository mining
-- **Control Flow Graph (CFG)** extraction
-- **Semantic clustering** to identify issue patterns
-- **Statistical analysis** of project characteristics
+
+Presented by: *Akibur Rahman*
+
+Note: 
+As you know by now, I'm Akibur Rahman, a software engineer at..
+I completed my BSc in CSE from Bangladesh University of Engineering and Technology.
+
+
+
+### Overview
+
+This study analyzes bug-fix commits across GitHub repositories
 
 Note:
-Today we'll explore patterns in software bugs and vulnerabilities across thousands of commits
+The study aims to understand the patterns of bug-fix commits and their relationship with the project characteristics.
+- To achieve this, we use Boa's GitHub dataset to mine commits at scale
+- We extract the control flow graph (CFG) of each commit
+- Then we try to find patterns in those commits.
 
 
+### Research Questions
 
-## Research Questions
+1. **Top Projects**: What are the top 10 projects with the most bug-fix commits and their characteristics?
 
-1. **Top Projects**: What are the top 10 projects with the most bug-fix commits?
-   - What characteristics do they share?
-   - What makes them different?
-   - Do any of the projects have incivil commits?
-   - Is there any correlation between the depth of the CFG and the number of bug-fix commits?
+Note:
+- What characteristics do they share?
+- What makes them different?
+- Do any of the projects have incivil commits?
+- Is there any correlation between the depth of the CFG and the number of bug-fix commits?
 
 
-
-## Research Questions (cont.)
+### Research Questions (cont.)
 
 2. **Issue Types**: What are the most common types of bugs and vulnerabilities?
-   - Can we identify patterns using semantic analysis?
-
-
-
-## Methodology
-
-### Data Collection Pipeline
-
-1. **Boa Query**: Keyword-based commit detection
-   - Keywords: `bug`, `fix`, `patch`, `issue`, `vulnerability`, `CVE`, etc.
-2. **CFG Extraction**: Serialized control flow graphs
-3. **Dataset Schema**: `project_url`, `commit_url`, `message`, `cfg_data`
-4. **Scale**: ~1.1 GB dataset with thousands of commits
 
 Note:
-We used Boa's GitHub dataset to mine commits at scale, focusing on repositories with clear bug-fix signals
+- Can we identify patterns using semantic analysis?
 
+
+
+### Methodology
+
+**Data Collection Pipeline**
+1. Boa Query: Keyword-based commit detection <!-- .element: class="fragment" -->
+   - Keywords: `bug`, `fix`, `patch`, `issue`, `vulnerability`, `CVE`, etc.
+2. CFG Extraction: Serialized control flow graphs <!-- .element: class="fragment" -->
+3. Define and make the dataset schema <!-- .element: class="fragment" -->
+4. Scale: ~1.1 GB dataset <!-- .element: class="fragment" -->
+
+Note:
+- Keyword based commit detection of fix commits. I first defined the keywords that might be used in bug-fix commits.
+- Then I used Boa to query the GitHub dataset and extract the commits.
+- Then I iterated over the changed files and extracted the methods that were present in those file.
+- Then I checked if the method was
 
 
 ## Top 10 Projects
