@@ -269,7 +269,7 @@ Note:
 
 ### Do Fixes Reduce Complexity?
 
-<li class="fragment"> <b>General Trend</b>: Most fixes do <b>not</b> significantly change depth (Δ ≈ 0) </li>
+<li class="fragment"> <b>General Trend</b>: Most fixes do <b>not</b> significantly change </li>
 <li class="fragment"> <b>Exception</b>: <b>Security Fixes</b> </li>
 <li class="fragment"> Only category with <b>negative</b> mean delta (-0.01) </li>
 <li class="fragment"> Suggests intentional simplification </li>
