@@ -338,7 +338,7 @@ Note:
 ### Cluster Visualization
 
 
-![UMAP Projection of semantic clusters](/assets/cluster-projection.png)
+![UMAP Projection of semantic clusters](https://akibur-rahman.com/phd-recruitment-task/assets/cluster-projection.png)
 
 
 ### Cluster Visualization (cont.)
