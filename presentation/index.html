@@ -29,7 +29,11 @@
   <script>
     Reveal.initialize({
       hash: true,
-      plugins: [RevealMarkdown, RevealNotes]
+      plugins: [RevealMarkdown, RevealNotes],
+      markdown: {
+        smartypants: true,
+        fragmentedLists: true
+      }
     });
   </script>
 </body>
