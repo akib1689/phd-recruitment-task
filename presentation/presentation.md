@@ -41,7 +41,8 @@ Note:
 2. **Issue Types**: What are the most common types of bugs and vulnerabilities?
 
 Note:
-- Can we identify patterns using semantic analysis?
+- Can we identify patterns in the bug-fix commits?
+- Do they share any common characteristics?
 
 
 
@@ -336,9 +337,8 @@ Note:
 
 ### Cluster Visualization
 
-*UMAP Projection of semantic clusters*
 
-![UMAP Projection of semantic clusters](https://github.com/akib1689/phd-recruitment-task/blob/main/assets/screenshots/cluster-projection.png)
+![UMAP Projection of semantic clusters](/assets/cluster-projection.png)
 
 
 ### Cluster Visualization (cont.)
