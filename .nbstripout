@@ -1,5 +1,0 @@
-{
-  "extra_keys": ["metadata.cellId", "metadata.kernel_spec"],
-  "keep_output": false,
-  "keep_count": false
-}
