@@ -4,9 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Presentation</title>
-  <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css">
-  <link rel="icon" type="image/svg+xml" href="https://revealjs.com/images/favicon.svg">
-  <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/serif.css">
+
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.6.1/dist/reveal.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.6.1/dist/theme/serif.css">
+
+
+  <link rel="icon" type="image/svg+xml" href="https://revealjs.com/favicon.svg">
 </head>
 <body>
   <div class="reveal">
@@ -16,24 +19,19 @@
             data-separator="^\n\n\n"
             data-separator-vertical="^\n\n"
             data-separator-notes="^Note:"
-            data-charset="iso-8859-15"
+            data-charset="utf-8"
         >
         </section>
     </div>
   </div>
 
-  <script src="node_modules/reveal.js/plugin/markdown/markdown.js"></script>
-  <script src="node_modules/reveal.js/plugin/notes/notes.js"></script>
-
-  <script src="node_modules/reveal.js/dist/reveal.js"></script>
+  <script src="https://unpkg.com/reveal.js@4.6.1/dist/reveal.js"></script>
+  <script src="https://unpkg.com/reveal.js@4.6.1/plugin/markdown/markdown.js"></script>
+  <script src="https://unpkg.com/reveal.js@4.6.1/plugin/notes/notes.js"></script>
   <script>
     Reveal.initialize({
       hash: true,
       plugins: [RevealMarkdown, RevealNotes],
-      markdown: {
-        smartypants: true,
-        fragmentedLists: true
-      }
     });
   </script>
 </body>
