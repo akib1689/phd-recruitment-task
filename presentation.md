@@ -144,6 +144,8 @@ To answer this question,
 - Then I sorted the projects by the number of commits in descending order and selected the top 10.
 
 
+### Top 10 Projects
+
 | Rank | Project | Commits | Domain |
 |------|---------|---------|--------|
 | 1 | Ceylon compiler | 2,126 | Language Engineering |
