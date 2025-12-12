@@ -381,14 +381,43 @@ The notebook includes the following key sections:
 - Find the nodes and edges from a dot string. Show different statistics about the changed cfg complexity over the commits. Also I have visualized some of the findings using matplotlib and seaborn.
 - Sample a CFG pair that changed over a commit. Then rendered the CFGs using graphviz. And finally displayed that in the notebook.
 
-## Task 5: Issue Type Semantic Clustering
+## Task 5: Answering Research Questions
 
-I have implemented a semantic clustering pipeline to identify common issue types, bugs, and vulnerabilities in the dataset. This analysis uses **Sentence Transformers**, **UMAP**, and **HDBSCAN** to group similar commits based on their messages and changed files.
-
-For detailed documentation, methodology, and findings, please refer to: [**Issue Clustering Analysis Docs**](issue_clustering_analysis.md).
-
-## Task 6: Analysis of Top 10 Fix Projects
+### Task 5.1: Top 10 Fix Projects Analysis
 
 I have analyzed the top 10 projects with the most bug-fixing commits to identify their commonalities and differences. Key findings include a dominance of Java and a significant disparity in commit volume.
 
-For the detailed analysis, see: [**Top 10 Fix Projects Analysis**](top_10_fix_projects_analysis.md).
+For the detailed analysis, see: [**Top 10 Fix Projects Analysis**](/notebooks/top_10_project_with_fix.ipynb).
+
+In summary this notebook does this:
+
+- Load the dataset
+- Clean and preprocess the dataset.
+- Find the top 10 projects with the most bug-fixing commits.
+- Analyze the top 10 projects to identify their commonalities and differences. (This portion of the notebook is written manually. I could not find a way to do it automatically.)
+- Find if there are any incibil commits in those top projects.
+- Analyze the correlation between the CFG depth and the number of bug-fixing commits. (if any correlation exists).
+
+### Task 5.2: Issue Type Semantic Clustering
+
+To identify common issue types and vulnerabilities without manual labeling, I implemented a semantic clustering pipeline.
+
+#### Subtask 5.2.1: Pipeline Implementation
+
+I created a Jupyter notebook `notebooks/issue_clustering_analysis.ipynb` that performs the following steps:
+
+1. **Data Aggregation**: Grouped the dataset by `commit_url` to handle multiple rows per commit (due to multiple changed files/methods).
+2. **Text Representation**: Constructed a rich text string for each commit: `"{Message} | Files: {A}, {B} | Methods: {X}, {Y}"`.
+3. **Embedding Generation**: Used the `all-MiniLM-L6-v2` model from Sentence Transformers to convert text into 384-dimensional vectors.
+4. **Dimensionality Reduction**: Applied UMAP to reduce dimensions to 50, optimizing for density-based clustering.
+5. **Clustering**: Utilized HDBSCAN to identify clusters of similar commits, filtering out noise.
+
+#### Subtask 5.2.2: Cluster Analysis
+
+To interpret the clusters, I implemented a TF-IDF based keyword extraction. This analyzes the text within each cluster to find representative terms (e.g., "login", "buffer", "null").
+
+Detailed methodology and findings are documented in [Issue Clustering Analysis Docs](issue_clustering_analysis.md).
+
+## Presentation
+
+I have created a presentation using reveal.js to showcase my findings and conclusions. The presentation is located at `gh-pages` branch. in the root directory.

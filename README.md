@@ -67,18 +67,17 @@ A presentation slide deck summarizing: Methodology, Key findings and observation
 - [x] Boa query development for bug-fix commit detection
 - [x] CFG extraction implementation
 - [x] Dataset generation
-
-### In Progress
-
-- [ ] Data cleaning and preprocessing
-- [ ] Data analysis and visualization
-- [ ] Answering research questions based on the dataset
-
-### Planned
-
-- [ ] Presentation creation with reveal.js
+- [x] Data cleaning and preprocessing
+- [x] Data analysis and visualization
+- [x] Answering research questions based on the dataset
+- [x] Presentation creation with reveal.js
 
 ## Journey Documentation
 
 For detailed step-by-step documentation of my progress, please see:  
 📖 [Journey Documentation](docs/README.md)
+
+## Presentation
+
+The presentation is available at:  [PhD task presentation](https://akibur-rahman.com/phd-recruitment-task/)
+
